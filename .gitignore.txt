@@ -1,0 +1,17 @@
+# Node / React
+**/node_modules/
+**/build/
+.npm
+*.log
+
+# Java / Maven
+**/target/
+*.class
+.mvn/
+.idea/
+*.iml
+.vscode/
+
+# Env Secrets
+.env
+.env.local
