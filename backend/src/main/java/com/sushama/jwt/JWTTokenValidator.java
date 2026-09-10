@@ -34,15 +34,18 @@ public class JWTTokenValidator extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
+        String uri = request.getRequestURI();
         String method = request.getMethod();
 
-        return "OPTIONS".equalsIgnoreCase(method) ||
-               path.equals("/api/v1/register") ||
-               path.equals("/api/v1/login") ||
-               path.startsWith("/api/v1/get/") ||
-               path.startsWith("/api/v1/products/") ||
-               path.startsWith("/images/") ||
-               path.startsWith("/api/v1/images/");
+        if ("OPTIONS".equalsIgnoreCase(method)) {
+            return true;
+        }
+
+        return path.contains("/api/v1/register") || uri.contains("/api/v1/register") ||
+               path.contains("/api/v1/login")    || uri.contains("/api/v1/login") ||
+               path.contains("/api/v1/get/")     || uri.contains("/api/v1/get/") ||
+               path.contains("/api/v1/products") || uri.contains("/api/v1/products") ||
+               path.contains("/images/")         || uri.contains("/images/");
     }
 
     @Override
@@ -98,7 +101,7 @@ public class JWTTokenValidator extends OncePerRequestFilter {
                         String cleanRole = role.startsWith("ROLE_")
                                 ? role.substring(5)
                                 : role;
-                        
+
                         authorities.add(new SimpleGrantedAuthority(cleanRole));
                         authorities.add(new SimpleGrantedAuthority("ROLE_" + cleanRole));
                     }

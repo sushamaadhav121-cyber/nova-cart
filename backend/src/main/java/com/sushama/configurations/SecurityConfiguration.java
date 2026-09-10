@@ -1,5 +1,6 @@
 package com.sushama.configurations;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -49,36 +51,22 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(request -> request
-
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                        .requestMatchers("/api/v1/register").permitAll()
-                        .requestMatchers("/api/v1/login").permitAll()
+                        .requestMatchers("/api/v1/register", "/api/v1/register/**").permitAll()
+                        .requestMatchers("/api/v1/login", "/api/v1/login/**").permitAll()
                         .requestMatchers("/api/v1/get/**").permitAll()
-                        
                         .requestMatchers("/api/v1/products/**").permitAll()
-
-                        .requestMatchers("/images/**").permitAll()
-                        .requestMatchers("/api/v1/images/**").permitAll()
-
-                        // ADMIN Endpoints - 403 Forbidden टाळण्यासाठी थेट authenticated युझरला अनुमती दिली
-                        .requestMatchers("/api/v1/admin/**").authenticated()
-
-                        // CUSTOMER Endpoints
+                        .requestMatchers("/images/**", "/api/v1/images/**").permitAll()
+                        .requestMatchers("/api/v1/admin/**").permitAll()
                         .requestMatchers("/api/v1/customer/**").authenticated()
-
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        // JWT Filter
         httpSecurity.addFilterBefore(jwtTokenValidator, UsernamePasswordAuthenticationFilter.class);
-
         return httpSecurity.build();
     }
 
@@ -86,11 +74,15 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         
-        // Port 3000 (Customer App) आणि Port 3001 (Admin App)
-        config.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:3001"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "X-Requested-With", "Origin"));
-        config.setExposedHeaders(List.of("Authorization"));
+        // Frontend local URLs allow करा
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:3000",
+                "http://localhost:3001",
+                "http://127.0.0.1:3000"
+        ));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        config.setAllowedHeaders(Arrays.asList("*"));
+        config.setExposedHeaders(Arrays.asList("Authorization"));
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
