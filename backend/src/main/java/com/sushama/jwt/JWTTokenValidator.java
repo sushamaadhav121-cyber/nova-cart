@@ -10,8 +10,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 
 import com.sushama.services.MyUserDetailsService;
@@ -30,6 +30,21 @@ public class JWTTokenValidator extends OncePerRequestFilter {
     @Autowired
     private MyUserDetailsService myUserDetailsService;
 
+    // या एंडपॉईंट्ससाठी आणि OPTIONS रिक्वेस्टसाठी JWT व्हॅलिडेशन बायपास केले जाईल
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        String method = request.getMethod();
+
+        return "OPTIONS".equalsIgnoreCase(method) ||
+               path.equals("/api/v1/register") ||
+               path.equals("/api/v1/login") ||
+               path.startsWith("/api/v1/get/") ||
+               path.startsWith("/api/v1/products/") ||
+               path.startsWith("/images/") ||
+               path.startsWith("/api/v1/images/");
+    }
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -42,10 +57,6 @@ public class JWTTokenValidator extends OncePerRequestFilter {
         String jwtToken = null;
         String username = null;
         String role = null;
-
-        // ==============================
-        // 1. Get JWT Token
-        // ==============================
 
         if (header != null && header.startsWith("Bearer ")) {
 
@@ -68,10 +79,6 @@ public class JWTTokenValidator extends OncePerRequestFilter {
             }
         }
 
-        // ==============================
-        // 2. Authenticate User
-        // ==============================
-
         if (username != null
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
 
@@ -85,32 +92,16 @@ public class JWTTokenValidator extends OncePerRequestFilter {
 
                     List<GrantedAuthority> authorities = new ArrayList<>();
 
-                    // ==============================
-                    // Role from JWT
-                    // ==============================
-
                     if (role != null && !role.trim().isEmpty()) {
 
                         role = role.trim().toUpperCase();
-
-                        // Remove ROLE_ if already present
                         String cleanRole = role.startsWith("ROLE_")
                                 ? role.substring(5)
                                 : role;
-
-                        // Add both formats
-                        authorities.add(
-                                new SimpleGrantedAuthority(cleanRole)
-                        );
-
-                        authorities.add(
-                                new SimpleGrantedAuthority("ROLE_" + cleanRole)
-                        );
+                        
+                        authorities.add(new SimpleGrantedAuthority(cleanRole));
+                        authorities.add(new SimpleGrantedAuthority("ROLE_" + cleanRole));
                     }
-
-                    // ==============================
-                    // Also add roles from UserDetails
-                    // ==============================
 
                     for (GrantedAuthority authority : userDetails.getAuthorities()) {
 
@@ -123,17 +114,13 @@ public class JWTTokenValidator extends OncePerRequestFilter {
                     System.out.println("FINAL AUTHORITIES = " + authorities);
                     System.out.println("=================================");
 
-                    UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(
-                                    userDetails,
-                                    null,
-                                    authorities
-                            );
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            authorities);
 
-                    authToken.setDetails(
-                            new WebAuthenticationDetailsSource()
-                                    .buildDetails(request)
-                    );
+                    authToken.setDetails(new WebAuthenticationDetailsSource()
+                            .buildDetails(request));
 
                     SecurityContextHolder
                             .getContext()
@@ -141,7 +128,6 @@ public class JWTTokenValidator extends OncePerRequestFilter {
                 }
 
             } catch (Exception e) {
-
                 System.out.println(
                         "Authentication Error = " + e.getMessage()
                 );
