@@ -15,17 +15,14 @@ import lombok.Data;
 public class SubCategory {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 
     @Column(nullable = false)
     private String name;
 
-    // Soft delete साठी status कॉलम (बाय डीफॉल्ट 'ACTIVE')
     @Column(name = "status")
     private String status = "ACTIVE";
 
-    // UI डॅशबोर्डवर प्रॉडक्ट संख्या दाखवण्यासाठी (डेटाबेस टेबलमध्ये हा कॉलम तयार होणार नाही)
     @Transient
     private int productCount;
 

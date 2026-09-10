@@ -15,7 +15,7 @@ import lombok.Data;
 public class Admin {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
     private long id;
 
     private String fullName;
@@ -26,7 +26,6 @@ public class Admin {
     @JoinColumn(name = "user_id")
     private User user;
 }
-
 
 
 

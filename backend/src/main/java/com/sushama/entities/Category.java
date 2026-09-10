@@ -19,7 +19,7 @@ import lombok.Data;
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
     private long id;
 
     @Column(nullable = false, unique = true)
@@ -38,7 +38,6 @@ public class Category {
     @JsonIgnoreProperties("category")
     private List<SubCategory> subCategories;
 
-    // getProducts() काढून फक्त हे Transient फील्ड ठेवा (एरर निघून जाईल)
     @Transient
     private int productCount;
 }
