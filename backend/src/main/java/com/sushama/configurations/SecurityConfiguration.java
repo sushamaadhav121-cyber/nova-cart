@@ -25,6 +25,8 @@ import com.sushama.jwt.JWTTokenGenerator;
 import com.sushama.jwt.JWTTokenValidator;
 import com.sushama.services.MyUserDetailsService;
 
+import jakarta.servlet.DispatcherType;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
@@ -54,6 +56,7 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(request -> request
+                        .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.FORWARD).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/v1/register", "/api/v1/register/**").permitAll()
                         .requestMatchers("/api/v1/login", "/api/v1/login/**").permitAll()
@@ -74,7 +77,6 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         
-        // Frontend local URLs allow करा
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:3000",
                 "http://localhost:3001",
