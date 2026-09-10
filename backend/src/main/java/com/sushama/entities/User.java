@@ -21,7 +21,7 @@ import lombok.Data;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
     private long id;
 
     @Column(nullable = false, unique = true)
@@ -33,7 +33,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    // Sirf Customer ke liye Reverse Mapping
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     @JsonIgnoreProperties("user")
     private Customer customer;
