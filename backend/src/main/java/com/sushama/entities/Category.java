@@ -32,7 +32,7 @@ public class Category {
     @Column(nullable = false)
     private String status = "ACTIVE";
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = SubCategory.class)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnoreProperties("category")
     private List subCategories;
 

@@ -28,7 +28,7 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     private String name;
@@ -48,7 +48,7 @@ public class Product {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "subcategory_id")
-    @JsonIgnoreProperties("products")
+    @JsonIgnoreProperties({"products", "category"})
     private SubCategory subCategory;
 
     @CreatedDate
