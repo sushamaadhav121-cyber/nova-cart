@@ -10,11 +10,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Entity
+@Table(name = "categories")
 @Data
 public class Category {
 
@@ -34,7 +36,7 @@ public class Category {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnoreProperties("category")
-    private List subCategories;
+    private List <SubCategory> subCategories;
 
     @Transient
     private int productCount;
