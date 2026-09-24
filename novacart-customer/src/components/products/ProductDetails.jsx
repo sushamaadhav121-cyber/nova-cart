@@ -108,7 +108,6 @@ export default function ProductDetails() {
             />
           </div>
 
-          {/* प्रॉडक्ट माहिती व किंमत */}
           <div className="col-12 col-md-7">
             <div className="d-flex gap-2 mb-2">
               {product.subCategory?.category?.name && (
