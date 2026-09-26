@@ -38,21 +38,16 @@ public class ProductService {
 
     private final String IMAGE_UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/images/";
 
-    // 1. Add Product
-    public ResponseEntity<?> addProduct(String productObject, MultipartFile productImage) throws IOException {
-        
-        // Convert productObject String to Product Entity
+    public ResponseEntity addProduct(String productObject, MultipartFile productImage) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         Product product = objectMapper.readValue(productObject, Product.class);
 
-        // Validate & set SubCategory
-        Optional<SubCategory> existingSubCategory = subCategoryRepository.findById(product.getSubCategory().getId());
-        if (existingSubCategory.isEmpty()) {
+        SubCategory existingSubCategory = subCategoryRepository.findById(product.getSubCategory().getId()).orElse(null);
+        if (existingSubCategory == null) {
             return response.send("SubCategory not found!", null, HttpStatus.NOT_FOUND);
         }
-        product.setSubCategory(existingSubCategory.get());
+        product.setSubCategory(existingSubCategory);
 
-        // Handle Image Upload with Unique Filename
         if (productImage != null && !productImage.isEmpty()) {
             File directory = new File(IMAGE_UPLOAD_DIR);
             if (!directory.exists()) {
@@ -68,14 +63,12 @@ public class ProductService {
             product.setImageName(uniqueImageName);
         }
 
-        // Save Product
         Product savedProduct = productRepository.save(product);
         return response.send("Product Added Successfully!", savedProduct, HttpStatus.CREATED);
     }
 
-    // 2. Get All Products
-    public ResponseEntity<?> getAllProducts() {
-        List<Product> products = productRepository.findAll();
+    public ResponseEntity getAllProducts() {
+        List products = productRepository.findAll();
         
         if (products.isEmpty()) {
             return response.send("No products found in the catalog!", null, HttpStatus.NOT_FOUND);
@@ -84,9 +77,8 @@ public class ProductService {
         }
     }
 
-    // 3. Delete Product
-    public ResponseEntity<?> deleteProduct(long productId) {
-        Optional<Product> existingProduct = productRepository.findById(productId);
+    public ResponseEntity deleteProduct(long productId) {
+        Optional existingProduct = productRepository.findById(productId);
         
         if (existingProduct.isPresent()) {
             productRepository.deleteById(productId);
@@ -96,9 +88,8 @@ public class ProductService {
         }
     }
 
-    // 4. Get Single Product by ID 
-    public ResponseEntity<?> getProductById(long productId) {
-        Optional<Product> existingProduct = productRepository.findById(productId);
+    public ResponseEntity getProductById(long productId) {
+        Optional existingProduct = productRepository.findById(productId);
         
         if (existingProduct.isPresent()) {
             return response.send("Product found!", existingProduct.get(), HttpStatus.OK);
@@ -107,55 +98,53 @@ public class ProductService {
         }
     }
 
-    // 5. Update Product
-    public ResponseEntity<?> updateProduct(long productId, String productObject, MultipartFile productImage) throws IOException {
-        Optional<Product> optionalProduct = productRepository.findById(productId);
-        
-        if (optionalProduct.isPresent()) {
-            Product existingProduct = optionalProduct.get();
+    public ResponseEntity updateProduct(long productId, String productObject, MultipartFile productImage) throws IOException {
+        Product existingProduct = productRepository.findById(productId).orElse(null);
 
-            // Convert JSON string to Product object
-            ObjectMapper objectMapper = new ObjectMapper();
-            Product newProduct = objectMapper.readValue(productObject, Product.class);
-
-            // Set SubCategory mapping (FK)
-            if (newProduct.getSubCategory() != null) {
-                Optional<SubCategory> existingSubCategory = subCategoryRepository.findById(newProduct.getSubCategory().getId());
-                existingSubCategory.ifPresent(newProduct::setSubCategory);
-            }
-
-            // Handle Image upload
-            if (productImage != null && !productImage.isEmpty()) {
-                String originalImageName = productImage.getOriginalFilename();
-                newProduct.setImageName(originalImageName);
-
-                Path completeImagePath = Paths.get(IMAGE_UPLOAD_DIR, originalImageName);
-                Files.write(completeImagePath, productImage.getBytes());
-            } else {
-                newProduct.setImageName(existingProduct.getImageName());
-            }
-
-            // Retain primary key and audit timestamps
-            newProduct.setId(existingProduct.getId());
-            newProduct.setCreatedAt(existingProduct.getCreatedAt());
-
-            // Save updated product to database
-            Product updatedProduct = productRepository.save(newProduct);
-            return response.send("Product updated successfully!", updatedProduct, HttpStatus.OK);
-        } else {
+        if (existingProduct == null) {
             return response.send("Product does not exist!", null, HttpStatus.NOT_FOUND);
         }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Product newProduct = objectMapper.readValue(productObject, Product.class);
+
+        if (newProduct.getSubCategory() != null) {
+            SubCategory existingSubCategory = subCategoryRepository.findById(newProduct.getSubCategory().getId()).orElse(null);
+            if (existingSubCategory != null) {
+                newProduct.setSubCategory(existingSubCategory);
+            }
+        }
+
+        if (productImage != null && !productImage.isEmpty()) {
+            File directory = new File(IMAGE_UPLOAD_DIR);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            String originalImageName = productImage.getOriginalFilename();
+            newProduct.setImageName(originalImageName);
+
+            Path completeImagePath = Paths.get(IMAGE_UPLOAD_DIR, originalImageName);
+            Files.write(completeImagePath, productImage.getBytes());
+        } else {
+            newProduct.setImageName(existingProduct.getImageName());
+        }
+
+        newProduct.setId(existingProduct.getId());
+        newProduct.setCreatedAt(existingProduct.getCreatedAt());
+
+        Product updatedProduct = productRepository.save(newProduct);
+        return response.send("Product updated successfully!", updatedProduct, HttpStatus.OK);
     }
 
-    // 6. Filter Products 
-    public ResponseEntity<?> filterProducts(String categoryName, String subCategoryName, String productName, String sortDirection) {
-        Specification<Product> allCustomFiltersOnProduct = Specification
+    public ResponseEntity filterProducts(String categoryName, String subCategoryName, String productName, String sortDirection) {
+        Specification allCustomFiltersOnProduct = Specification
                 .where(ProductSpecification.hasCategory(categoryName))
                 .and(ProductSpecification.hasSubCategory(subCategoryName))
                 .and(ProductSpecification.searchByProductName(productName))
                 .and(ProductSpecification.sortByPrice(sortDirection));
 
-        List<Product> filteredProducts = productRepository.findAll(allCustomFiltersOnProduct);
+        List filteredProducts = productRepository.findAll(allCustomFiltersOnProduct);
 
         if (filteredProducts.isEmpty()) {
             return response.send("No products found for given filter!", null, HttpStatus.NOT_FOUND);
