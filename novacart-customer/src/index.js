@@ -17,6 +17,7 @@ import Login from './components/authentication/Login';
 import Cart from './components/cart/Cart';
 import Orders from './components/orders/Orders';
 import ProductDetails from './components/products/ProductDetails';
+import Wishlist from './components/wishlist/Wishlist';
 
 const projectRoutes = createBrowserRouter([
   {
@@ -31,7 +32,8 @@ const projectRoutes = createBrowserRouter([
       { path: "/login", element: <Login /> },
       { path: "/my-cart", element: <Cart /> },
       { path: "/products/:id", element: <ProductDetails /> },
-      { path: "/my-orders", element: <Orders /> }
+      { path: "/my-orders", element: <Orders /> },
+      { path: "/wishlist", element: <Wishlist /> },
     ]
   }
 ]);
