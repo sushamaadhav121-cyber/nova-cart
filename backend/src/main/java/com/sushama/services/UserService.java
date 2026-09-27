@@ -94,7 +94,6 @@ public class UserService {
         String role = existingUser.getRole().name();
         String jwtToken = jwtTokenGenerator.generateToken(userDetails, role);
 
-        // Setting ID according to User Type (Customer ID or User/Admin ID)
         if ("CUSTOMER".equalsIgnoreCase(role) && existingUser.getCustomer() != null) {
             jwtResponseWrapper.setId(existingUser.getCustomer().getId());
         } else {

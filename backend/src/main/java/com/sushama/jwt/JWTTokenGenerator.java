@@ -36,26 +36,22 @@ public class JWTTokenGenerator {
         return username;
     }
 
-    // Extract ROLE from JWT Claims
     public String extractRole(String token) {
         Claims claims = extractAllClaims(token);
         return claims.get("role", String.class);
     }
 
-    // Check if token expired
     private Boolean isExpired(String token) {
         Claims claims = extractAllClaims(token);
         Date expiration = claims.getExpiration();
         return expiration.before(new Date());
     }
 
-    // Validate token
     public Boolean validateToken(String token, UserDetails userDetails) {
         String username = extractUsername(token);
         return (username != null && username.equals(userDetails.getUsername()) && !isExpired(token));
     }
 
-    // Generate token
     public String generateToken(UserDetails userDetails, String role) {
         System.out.println("Generating token for user: " + userDetails.getUsername() + " with role: " + role);
         Map<String, Object> claims = new HashMap<>();

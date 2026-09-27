@@ -52,18 +52,15 @@ public class PaymentService {
         razorpayClient = new RazorpayClient(apiKey, apiSecret);
     }
 
-    // 1. Create Order
     public JSONObject createOrder(int amount, String currency, long customerId) throws RazorpayException {
         JSONObject orderRequest = new JSONObject();
-        orderRequest.put("amount", amount * 100); // Amount converted to paise
+        orderRequest.put("amount", amount * 100); 
         orderRequest.put("currency", currency);
         orderRequest.put("receipt", "receipt_" + customerId + "_" + System.currentTimeMillis());
-
         Order order = razorpayClient.orders.create(orderRequest);
         return order.toJson();
     }
 
-    // 2. Verify Payment & Save Order
     public ResponseEntity<?> verifyPayment(VerifyPaymentRequest request) throws RazorpayException {
         JSONObject options = new JSONObject();
         options.put("razorpay_order_id", request.getRazorpayOrderId());
@@ -75,7 +72,6 @@ public class PaymentService {
             return ResponseEntity.badRequest().body("Invalid Signature");
         }
 
-        // Payment is genuine -> Create Order
         com.sushama.entities.Order order = new com.sushama.entities.Order();
         order.setCustomer(customerRepository.findById(request.getCustomerId()).get());
         order.setPaymentId(request.getRazorpayPaymentId());
@@ -89,7 +85,6 @@ public class PaymentService {
         
         orderRepository.save(order);
 
-        // Fetch user cart items, move to OrderItem, and clear cart
         List<Cart> cartItems = cartRepository.findByCustomerId(request.getCustomerId());
         for (Cart cart : cartItems) {
             OrderItem item = new OrderItem();

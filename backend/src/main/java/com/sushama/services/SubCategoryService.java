@@ -30,7 +30,6 @@ public class SubCategoryService {
     @Autowired
     private UnivarsalResponse response;
 
-    // 1. Get all sub-categories (with product count)
     public ResponseEntity<?> getAllSubCategories() {
         List<SubCategory> subCategories = subCategoryRepository.findAll();
         for (SubCategory sub : subCategories) {
@@ -40,13 +39,11 @@ public class SubCategoryService {
         return response.send("Following sub-categories found", subCategories, HttpStatus.OK);
     }
 
-    // 2. Get sub-categories by category ID (Public / Dropdown use)
     public ResponseEntity<?> getSubCategoriesByCategory(Long categoryId) {
         List<SubCategory> list = subCategoryRepository.findByCategory_Id(categoryId);
         return response.send("Sub-categories for category " + categoryId, list, HttpStatus.OK);
     }
 
-    // 3. Add Sub-Category (Admin Only)
     public ResponseEntity<?> addSubCategory(Long categoryId, SubCategory subCategory) {
         Optional<Category> catOpt = categoryRepository.findById(categoryId);
         if (catOpt.isEmpty()) {
@@ -64,7 +61,6 @@ public class SubCategoryService {
         return response.send("Sub-category added successfully", saved, HttpStatus.CREATED);
     }
 
-    // 4. Update Sub-Category (Admin Only)
     public ResponseEntity<?> updateSubCategory(Long id, Long newCategoryId, SubCategory updatedData) {
         Optional<SubCategory> optionalSub = subCategoryRepository.findById(id);
         if (optionalSub.isEmpty()) {
@@ -83,7 +79,6 @@ public class SubCategoryService {
         return response.send("Sub-category updated successfully", saved, HttpStatus.OK);
     }
 
-    // 5. Soft Delete / Deactivate Sub-Category
     public ResponseEntity<?> deactivateSubCategory(Long id) {
         Optional<SubCategory> optionalSub = subCategoryRepository.findById(id);
         if (optionalSub.isEmpty()) {
@@ -97,7 +92,6 @@ public class SubCategoryService {
         return response.send("Sub-category deactivated successfully", null, HttpStatus.OK);
     }
 
-    // 6. Reactivate Sub-Category
     public ResponseEntity<?> activateSubCategory(Long id) {
         Optional<SubCategory> optionalSub = subCategoryRepository.findById(id);
         if (optionalSub.isEmpty()) {

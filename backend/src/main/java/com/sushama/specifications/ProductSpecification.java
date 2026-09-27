@@ -10,7 +10,6 @@ import jakarta.persistence.criteria.Join;
 
 public class ProductSpecification {
 
-    // 1. Category-wise filtration
     public static Specification<Product> hasCategory(String categoryName) {
         return (root, query, criteriaBuilder) -> {
             if (categoryName == null || categoryName.isBlank()) {
@@ -21,8 +20,7 @@ public class ProductSpecification {
             return criteriaBuilder.equal(criteriaBuilder.lower(productCategoryJoin.get("name")), categoryName.trim().toLowerCase());
         };
     }
-
-    // 2. SubCategory-wise filtration
+    
     public static Specification<Product> hasSubCategory(String subCategoryName) {
         return (root, query, criteriaBuilder) -> {
             if (subCategoryName == null || subCategoryName.isBlank()) {
@@ -33,7 +31,6 @@ public class ProductSpecification {
         };
     }
 
-    // 3. Search by Product Name
     public static Specification<Product> searchByProductName(String productName) {
         return (root, query, criteriaBuilder) -> {
             if (productName == null || productName.isBlank()) {
@@ -43,7 +40,6 @@ public class ProductSpecification {
         };
     }
 
-    // 4. Sort by Price (asc / desc)
     public static Specification<Product> sortByPrice(String sortDirection) {
         return (root, query, criteriaBuilder) -> {
             if (sortDirection == null || sortDirection.isBlank()) {
@@ -54,7 +50,7 @@ public class ProductSpecification {
             } else if (sortDirection.equalsIgnoreCase("desc")) {
                 query.orderBy(criteriaBuilder.desc(root.get("price")));
             }
-            return null; // Predicate null aslyamule filtering apply hot nahi, fakt order set hote
+            return null;
         };
     }
 }

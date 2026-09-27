@@ -25,7 +25,6 @@ public class SubCategoryController {
         return subCategoryService.getSubCategoriesByCategory(categoryId);
     }
 
-    // Admin CRUD APIs
     @PostMapping("/api/v1/admin/categories/{categoryId}/sub-categories")
     public ResponseEntity<?> addSubCategory(@PathVariable Long categoryId, @RequestBody SubCategory subCategory) {
         return subCategoryService.addSubCategory(categoryId, subCategory);

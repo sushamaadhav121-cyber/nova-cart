@@ -26,34 +26,3 @@ public class Admin {
     @JoinColumn(name = "user_id")
     private User user;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

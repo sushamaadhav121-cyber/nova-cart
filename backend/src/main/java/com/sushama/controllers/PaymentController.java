@@ -23,7 +23,6 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
-    // Create Razorpay Order
     @PostMapping(value = "/customer/create-order", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createOrder(
             @RequestParam("amount") int amount,
@@ -34,10 +33,8 @@ public class PaymentController {
         return ResponseEntity.ok(order.toString());
     }
 
-    // Verify Payment Signature & Confirm Order
     @PostMapping("/customer/verify-payment")
-    public ResponseEntity<?> verifyPayment(@RequestBody VerifyPaymentRequest request)
-            throws RazorpayException {
-        return paymentService.verifyPayment(request);
+    public ResponseEntity<?> verifyPayment(@RequestBody VerifyPaymentRequest request)throws RazorpayException {
+           return paymentService.verifyPayment(request);
     }
 }

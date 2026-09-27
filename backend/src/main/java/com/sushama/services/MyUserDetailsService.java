@@ -31,25 +31,16 @@ public class MyUserDetailsService implements UserDetailsService {
                 );
 
         String roleStr = String.valueOf(existingUser.getRole())
-                .trim()
-                .toUpperCase();
+									                .trim()
+									                .toUpperCase();
 
-        // ROLE_ remove
         if (roleStr.startsWith("ROLE_")) {
             roleStr = roleStr.substring(5);
         }
 
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-
-        // ADMIN
-        authorities.add(
-                new SimpleGrantedAuthority(roleStr)
-        );
-
-        // ROLE_ADMIN
-        authorities.add(
-                new SimpleGrantedAuthority("ROLE_" + roleStr)
-        );
+        authorities.add(new SimpleGrantedAuthority(roleStr));
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + roleStr));
 
         System.out.println("=================================");
         System.out.println("USERNAME = " + existingUser.getUserName());

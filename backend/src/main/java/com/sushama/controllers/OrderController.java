@@ -31,9 +31,6 @@ public class OrderController {
     @Autowired
     private OrderItemRepository orderItemRepository;
 
-    // ==========================================
-    // 1. CUSTOMER API: Get Customer Orders
-    // ==========================================
     @GetMapping("/customer/{customerId}/orders")
     public ResponseEntity<?> getCustomerOrders(@PathVariable Long customerId) {
         List<Order> orders = orderRepository.findByCustomerId(customerId);
@@ -60,18 +57,12 @@ public class OrderController {
         return ResponseEntity.ok(responseList);
     }
 
-    // ==========================================
-    // 2. ADMIN API: Get All Orders (हा मिसिंग होता)
-    // ==========================================
     @GetMapping("/admin/orders")
     public ResponseEntity<?> getAllOrdersForAdmin() {
         List<Order> orders = orderRepository.findAll();
         return ResponseEntity.ok(orders);
     }
 
-    // ==========================================
-    // 3. ADMIN API: Update Order Status
-    // ==========================================
     @PutMapping("/admin/orders/{orderId}/status")
     public ResponseEntity<?> updateOrderStatus(
             @PathVariable Long orderId,

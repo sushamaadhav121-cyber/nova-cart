@@ -27,7 +27,6 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    // 1. Add product with image (Admin)
     @PostMapping(value = "/admin/products", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> addProduct(
             @RequestPart("productObject") String productObject,
@@ -35,25 +34,21 @@ public class ProductController {
         return productService.addProduct(productObject, productImage);
     }
 
-    // 2. Get All Products (Admin Dashboard)
     @GetMapping("/admin/products")
     public ResponseEntity<?> getAllProductsForAdmin() {
         return productService.getAllProducts();
     }
 
-    // 3. Delete Product (Admin)
     @DeleteMapping("/admin/products/{productId}")
     public ResponseEntity<?> deleteProduct(@PathVariable("productId") long productId) {
         return productService.deleteProduct(productId);
     }
     
-    // 4. Single Product GET Mapping (For Edit / Update Prefill)
     @GetMapping("/admin/products/{productId}")
     public ResponseEntity<?> getProductById(@PathVariable("productId") long productId) {
         return productService.getProductById(productId);
     }
 
-    // 5. Product Update PUT Mapping (Admin)
     @PutMapping("/admin/products/{productId}")
     public ResponseEntity<?> updateProduct(
             @PathVariable("productId") long productId,
@@ -62,13 +57,11 @@ public class ProductController {
         return productService.updateProduct(productId, productObject, productImage);
     }
     
-    // 6. Get All Products (Customer / Public Side)
     @GetMapping("/get/products")
     public ResponseEntity<?> getAllProductsForCustomer() {
         return productService.getAllProducts();
     }
     
-    // 7. Filtered Products (Category / SubCategory)
     @GetMapping("/get/filtered-products")
     public ResponseEntity<?> filterProducts(
             @RequestParam(name = "categoryName", required = false) String categoryName,
@@ -78,7 +71,6 @@ public class ProductController {
         return productService.filterProducts(categoryName, subCategoryName, productName, sortDirection);
     }
     
- // 8. Get Single Product by ID (Customer / Public Side)
     @GetMapping("/get/products/{productId}")
     public ResponseEntity<?> getSingleProductForCustomer(@PathVariable("productId") long productId) {
         return productService.getProductById(productId);

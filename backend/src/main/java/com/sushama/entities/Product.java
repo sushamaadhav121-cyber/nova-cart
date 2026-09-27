@@ -27,8 +27,8 @@ import lombok.Data;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) 
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
 
     @Column(nullable = false)
     private String name;
@@ -48,7 +48,7 @@ public class Product {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "subcategory_id")
-    @JsonIgnoreProperties({"products", "category"})
+    @JsonIgnoreProperties("products")
     private SubCategory subCategory;
 
     @CreatedDate

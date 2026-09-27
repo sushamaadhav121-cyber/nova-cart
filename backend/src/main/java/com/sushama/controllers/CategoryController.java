@@ -24,31 +24,31 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    // 1. सर्व Categories मिळवणे (Dashboard साठी Product count सह)
+    // 1. all Categories
     @GetMapping("/get/categories")
     public ResponseEntity<?> getAllCategories() {
         return categoryService.getAllCategories();
     }
 
-    // 2. नवीन Category जोडणे (Admin)
+    // 2. new Category(Admin)
     @PostMapping("/admin/categories")
     public ResponseEntity<?> addCategory(@Valid @RequestBody Category category) {
         return categoryService.addCategory(category);
     }
 
-    // 3. Category Update / Edit करणे (Name आणि Description बदलण्यासाठी)
+    // 3. Category Update
     @PutMapping("/admin/categories/{id}")
     public ResponseEntity<?> updateCategory(@PathVariable Long id, @Valid @RequestBody Category category) {
         return categoryService.updateCategory(id, category);
     }
 
-    // 4. Soft Delete / Deactivate करणे (Status 'INACTIVE' करण्यासाठी)
+    // 4. Soft Delete 
     @PutMapping("/admin/categories/{id}/deactivate")
     public ResponseEntity<?> deactivateCategory(@PathVariable Long id) {
         return categoryService.deactivateCategory(id);
     }
 
-    // 5. Category पुन्हा Activate करण्यासाठी (ऐच्छिक)
+    // 5. Category Activate
     @PutMapping("/admin/categories/{id}/activate")
     public ResponseEntity<?> activateCategory(@PathVariable Long id) {
         return categoryService.activateCategory(id);
