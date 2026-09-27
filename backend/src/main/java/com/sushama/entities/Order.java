@@ -15,7 +15,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "orders") // 'order' is a reserved SQL keyword
+@Table(name = "orders")
 @Data
 public class Order {
 
