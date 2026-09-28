@@ -61,6 +61,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/v1/products/**").permitAll()
                         .requestMatchers("/images/**", "/api/v1/images/**").permitAll()
                         .requestMatchers("/api/v1/admin/**").permitAll()
+                        .requestMatchers("/api/v1/wishlist/**").permitAll()
                         .requestMatchers("/api/v1/customer/**").authenticated()
                         .anyRequest().authenticated()
                 )
@@ -74,7 +75,6 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         
-        // Frontend local URLs allow करा
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:3000",
                 "http://localhost:3001",

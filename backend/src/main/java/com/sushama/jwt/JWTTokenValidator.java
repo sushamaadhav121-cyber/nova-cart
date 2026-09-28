@@ -30,7 +30,6 @@ public class JWTTokenValidator extends OncePerRequestFilter {
     @Autowired
     private MyUserDetailsService myUserDetailsService;
 
-    // या एंडपॉईंट्ससाठी आणि OPTIONS रिक्वेस्टसाठी JWT व्हॅलिडेशन बायपास केले जाईल
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();

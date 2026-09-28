@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sushama.entities.Wishlist;
 import com.sushama.services.WishlistService;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/v1/wishlist")
@@ -34,8 +35,13 @@ public class WishlistController {
     // 2. Wishlist madhe product add karne
     @PostMapping("/add/{productId}")
     public ResponseEntity addToWishlist(@PathVariable Long productId, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated. Please log in again.");
+        }
+        
         String userName = authentication.getName();
-        return ResponseEntity.ok(wishlistService.addToWishlist(userName, productId));
+        wishlistService.addToWishlist(userName, productId);
+        return ResponseEntity.ok("Added to wishlist successfully!");
     }
 
     // 3. Wishlist madhun product kadhne
