@@ -62,7 +62,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/images/**", "/api/v1/images/**").permitAll()
                         .requestMatchers("/api/v1/admin/**").permitAll()
                         .requestMatchers("/api/v1/wishlist/**").permitAll()
-                        .requestMatchers("/api/v1/customer/**").authenticated()
+                        .requestMatchers("/api/v1/customer/**").permitAll() 
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
