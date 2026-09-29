@@ -5,53 +5,58 @@ import FilterNavbar from '../navbar/FilterNavbar';
 export default function FetchProducts() {
   const [products, setProducts] = useState(null);
 
-  // 1. Initial load
+  const backendUrl = 'https://novacart-backend-ppkb.onrender.com';
+
   useEffect(() => {
     async function fetchAllProducts() {
       try {
-        let response = await fetch("http://localhost:8080/api/v1/get/products");
+        let response = await fetch(`${backendUrl}/api/v1/get/products`);
         let responseObject = await response.json();
-        if (response.ok && responseObject.data) {
+
+        if (responseObject && Array.isArray(responseObject.data)) {
           setProducts(responseObject.data);
+        } else if (Array.isArray(responseObject)) {
+          setProducts(responseObject);
         } else {
           setProducts([]);
         }
       } catch (error) {
-        console.error("Fetch products error:", error);
+        console.error('Fetch products error:', error);
         setProducts([]);
       }
     }
     fetchAllProducts();
   }, []);
 
-  // 2. Filter, Sort, & Search function
   async function filterProducts(categoryName, subCategoryName, sortDirection, productName) {
     try {
       let urlParams = new URLSearchParams();
 
-      if (categoryName && categoryName !== "All" && categoryName !== "Select Category") {
-        urlParams.append("categoryName", categoryName);
+      if (categoryName && categoryName !== 'All' && categoryName !== 'Select Category') {
+        urlParams.append('categoryName', categoryName);
       }
-      if (subCategoryName && subCategoryName !== "All" && subCategoryName !== "Select Sub-Category") {
-        urlParams.append("subCategoryName", subCategoryName);
+      if (subCategoryName && subCategoryName !== 'All' && subCategoryName !== 'Select Sub-Category') {
+        urlParams.append('subCategoryName', subCategoryName);
       }
-      if (sortDirection && sortDirection !== "All" && sortDirection !== "") {
-        urlParams.append("sortDirection", sortDirection);
+      if (sortDirection && sortDirection !== 'All' && sortDirection !== '') {
+        urlParams.append('sortDirection', sortDirection);
       }
-      if (productName && productName.trim() !== "") {
-        urlParams.append("productName", productName.trim());
+      if (productName && productName.trim() !== '') {
+        urlParams.append('productName', productName.trim());
       }
 
-      let response = await fetch(`http://localhost:8080/api/v1/get/filtered-products?${urlParams.toString()}`);
+      let response = await fetch(`\({backendUrl}/api/v1/get/filtered-products?\){urlParams.toString()}`);
       let responseObject = await response.json();
 
-      if (response.ok && responseObject.data) {
+      if (responseObject && Array.isArray(responseObject.data)) {
         setProducts(responseObject.data);
+      } else if (Array.isArray(responseObject)) {
+        setProducts(responseObject);
       } else {
         setProducts([]);
       }
     } catch (error) {
-      console.error("Filter error:", error);
+      console.error('Filter error:', error);
       setProducts([]);
     }
   }
@@ -63,7 +68,14 @@ export default function FetchProducts() {
       ) : (
         <>
           <FilterNavbar onFilterProducts={filterProducts} />
-          <DisplayProducts productsValue={products} />
+          {products.length === 0 ? (
+            <div className="text-center mt-5">
+              <h5>No products available right now.</h5>
+              <p className="text-muted">Please add products from the 'Add Product' tab.</p>
+            </div>
+          ) : (
+            <DisplayProducts productsValue={products} />
+          )}
         </>
       )}
     </div>

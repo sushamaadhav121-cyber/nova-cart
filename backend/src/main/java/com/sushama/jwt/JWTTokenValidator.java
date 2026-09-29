@@ -45,11 +45,8 @@ public class JWTTokenValidator extends OncePerRequestFilter {
                path.contains("/api/v1/get/")     || uri.contains("/api/v1/get/") ||
                path.contains("/api/v1/products") || uri.contains("/api/v1/products") ||
                path.contains("/images/")         || uri.contains("/images/") ||
-               path.contains("/api/v1/images/")  || uri.contains("/api/v1/images/") ||
-               path.contains("/api/v1/wishlist") || uri.contains("/api/v1/wishlist") ||
-               path.contains("/api/v1/customer") || uri.contains("/api/v1/customer");
+               path.contains("/api/v1/images/")  || uri.contains("/api/v1/images/");
     }
-
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
