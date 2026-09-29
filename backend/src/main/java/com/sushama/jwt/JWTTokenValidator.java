@@ -44,7 +44,10 @@ public class JWTTokenValidator extends OncePerRequestFilter {
                path.contains("/api/v1/login")    || uri.contains("/api/v1/login") ||
                path.contains("/api/v1/get/")     || uri.contains("/api/v1/get/") ||
                path.contains("/api/v1/products") || uri.contains("/api/v1/products") ||
-               path.contains("/images/")         || uri.contains("/images/");
+               path.contains("/images/")         || uri.contains("/images/") ||
+               path.contains("/api/v1/images/")  || uri.contains("/api/v1/images/") ||
+               path.contains("/api/v1/wishlist") || uri.contains("/api/v1/wishlist") ||
+               path.contains("/api/v1/customer") || uri.contains("/api/v1/customer");
     }
 
     @Override
@@ -92,7 +95,7 @@ public class JWTTokenValidator extends OncePerRequestFilter {
                 // Validate JWT
                 if (jwtTokenGenerator.validateToken(jwtToken, userDetails)) {
 
-                    List<GrantedAuthority> authorities = new ArrayList<>();
+                    List authorities = new ArrayList<>();
 
                     if (role != null && !role.trim().isEmpty()) {
 
