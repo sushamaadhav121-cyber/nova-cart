@@ -55,6 +55,7 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/error", "/error/**").permitAll() // <-- ही ओळ जोडा
                         .requestMatchers("/api/v1/register", "/api/v1/register/**").permitAll()
                         .requestMatchers("/api/v1/login", "/api/v1/login/**").permitAll()
                         .requestMatchers("/api/v1/get/**").permitAll()
@@ -62,7 +63,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/images/**", "/api/v1/images/**").permitAll()
                         .requestMatchers("/api/v1/admin/**").permitAll()
                         .requestMatchers("/api/v1/wishlist/**").permitAll()
-                        .requestMatchers("/api/v1/customer/**").permitAll() 
+                        .requestMatchers("/api/v1/customer/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
