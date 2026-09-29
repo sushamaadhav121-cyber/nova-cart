@@ -31,29 +31,30 @@ public class CartService {
     @Autowired
     private ProductRepository productRepository;
 
-    // 1. Add Product To Cart
-    public ResponseEntity<?> addToCart(long customerId, long productId) {
+ // 1. Add Product To Cart
+    public ResponseEntity addToCart(long customerId, long productId) {
         if (cartRepository.existsByCustomerIdAndProductId(customerId, productId)) {
             return response.send("This product is already in the cart", null, HttpStatus.CONFLICT);
         }
 
-        Optional<Customer> existingCustomer = customerRepository.findById(customerId);
+        Optional existingCustomer = customerRepository.findById(customerId);
         if (existingCustomer.isEmpty()) {
             return response.send("Customer not found!", null, HttpStatus.NOT_FOUND);
         }
 
-        Optional<Product> existingProduct = productRepository.findById(productId);
+        Optional existingProduct = productRepository.findById(productId);
         if (existingProduct.isEmpty()) {
             return response.send("Product not found!", null, HttpStatus.NOT_FOUND);
         }
 
         Cart cart = new Cart();
-        cart.setCustomer(existingCustomer.get());
-        cart.setProduct(existingProduct.get());
+        cart.setCustomer((Customer) existingCustomer.get());
+        cart.setProduct((Product) existingProduct.get());
         cart.setQuantity(1);
 
-        Cart savedCart = cartRepository.save(cart);
-        return response.send("Product added to cart successfully!", savedCart, HttpStatus.CREATED);
+        cartRepository.save(cart);
+
+        return response.send("Product added to cart successfully!", null, HttpStatus.CREATED);
     }
 
     // 2. Get Cart Items by Customer ID
