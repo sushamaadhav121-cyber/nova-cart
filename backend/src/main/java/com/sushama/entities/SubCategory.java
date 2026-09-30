@@ -1,5 +1,6 @@
 package com.sushama.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore; 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,5 +30,6 @@ public class SubCategory {
 
     @ManyToOne
     @JoinColumn(name = "category_id")
+    @JsonIgnore 
     private Category category;
 }
