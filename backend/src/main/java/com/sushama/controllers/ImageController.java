@@ -1,5 +1,7 @@
 package com.sushama.controllers;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -18,22 +20,27 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"}, allowCredentials = "true")
 public class ImageController {
 
-    private final Path imageDirectory = Paths.get("images");
+    private final String IMAGE_UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/images/";
 
     @GetMapping("/{imageName:.+}")
-    public ResponseEntity getImage(@PathVariable String imageName) {
+    public ResponseEntity<?> getImage(@PathVariable String imageName) {
         try {
-            Path filePath = imageDirectory.resolve(imageName).normalize();
+            Path filePath = Paths.get(IMAGE_UPLOAD_DIR).resolve(imageName).normalize();
             Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists() && resource.isReadable()) {
+                String contentType = Files.probeContentType(filePath);
+                if (contentType == null) {
+                    contentType = "application/octet-stream";
+                }
+
                 return ResponseEntity.ok()
-                        .contentType(MediaType.IMAGE_JPEG)
+                        .contentType(MediaType.parseMediaType(contentType))
                         .body(resource);
             } else {
                 return ResponseEntity.notFound().build();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             return ResponseEntity.notFound().build();
         }
     }
