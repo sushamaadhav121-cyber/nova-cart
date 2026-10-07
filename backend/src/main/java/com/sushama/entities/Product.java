@@ -46,6 +46,9 @@ public class Product {
 
     private String imageName;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "subcategory_id")
     @JsonIgnoreProperties("products")

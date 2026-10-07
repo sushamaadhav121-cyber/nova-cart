@@ -63,12 +63,13 @@ public class ProductService {
             product.setImageName(uniqueImageName);
         }
 
+        product.setDeleted(false);
         Product savedProduct = productRepository.save(product);
         return response.send("Product Added Successfully!", savedProduct, HttpStatus.CREATED);
     }
 
     public ResponseEntity getAllProducts() {
-        List products = productRepository.findAll();
+        List<Product> products = productRepository.findByIsDeletedFalse();
         
         if (products.isEmpty()) {
             return response.send("No products found in the catalog!", null, HttpStatus.NOT_FOUND);
@@ -77,11 +78,14 @@ public class ProductService {
         }
     }
 
+    // --- 2. Hard delete chya jagi Soft Delete ---
     public ResponseEntity deleteProduct(long productId) {
-        Optional existingProduct = productRepository.findById(productId);
+        Optional<Product> existingProductOpt = productRepository.findById(productId);
         
-        if (existingProduct.isPresent()) {
-            productRepository.deleteById(productId);
+        if (existingProductOpt.isPresent()) {
+            Product product = existingProductOpt.get();
+            product.setDeleted(true); 
+            productRepository.save(product); 
             return response.send("Product deleted successfully!", null, HttpStatus.OK);
         } else {
             return response.send("Product does not exist!", null, HttpStatus.NOT_FOUND);
@@ -89,10 +93,10 @@ public class ProductService {
     }
 
     public ResponseEntity getProductById(long productId) {
-        Optional existingProduct = productRepository.findById(productId);
+        Optional<Product> existingProductOpt = productRepository.findById(productId);
         
-        if (existingProduct.isPresent()) {
-            return response.send("Product found!", existingProduct.get(), HttpStatus.OK);
+        if (existingProductOpt.isPresent() && !existingProductOpt.get().isDeleted()) {
+            return response.send("Product found!", existingProductOpt.get(), HttpStatus.OK);
         } else {
             return response.send("Product does not exist!", null, HttpStatus.NOT_FOUND);
         }
@@ -101,7 +105,7 @@ public class ProductService {
     public ResponseEntity updateProduct(long productId, String productObject, MultipartFile productImage) throws IOException {
         Product existingProduct = productRepository.findById(productId).orElse(null);
 
-        if (existingProduct == null) {
+        if (existingProduct == null || existingProduct.isDeleted()) {
             return response.send("Product does not exist!", null, HttpStatus.NOT_FOUND);
         }
 
@@ -132,14 +136,18 @@ public class ProductService {
 
         newProduct.setId(existingProduct.getId());
         newProduct.setCreatedAt(existingProduct.getCreatedAt());
+        newProduct.setDeleted(existingProduct.isDeleted());
 
         Product updatedProduct = productRepository.save(newProduct);
         return response.send("Product updated successfully!", updatedProduct, HttpStatus.OK);
     }
 
     public ResponseEntity filterProducts(String categoryName, String subCategoryName, String productName, String sortDirection) {
+        Specification<Product> notDeletedSpec = (root, query, cb) -> cb.isFalse(root.get("isDeleted"));
+
         Specification allCustomFiltersOnProduct = Specification
-                .where(ProductSpecification.hasCategory(categoryName))
+                .where(notDeletedSpec)
+                .and(ProductSpecification.hasCategory(categoryName))
                 .and(ProductSpecification.hasSubCategory(subCategoryName))
                 .and(ProductSpecification.searchByProductName(productName))
                 .and(ProductSpecification.sortByPrice(sortDirection));

@@ -10,7 +10,11 @@ import com.sushama.entities.Product;
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
     List<Product> findBySubCategoryId(long subCategoryId);
- 
     long countBySubCategory_Category_Id(Long categoryId);
     long countBySubCategory_Id(Long subCategoryId);
+
+    List<Product> findByIsDeletedFalse();
+
+    long countBySubCategory_Category_IdAndIsDeletedFalse(Long categoryId);
+    long countBySubCategory_IdAndIsDeletedFalse(Long subCategoryId);
 }
