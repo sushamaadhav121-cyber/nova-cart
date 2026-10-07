@@ -33,7 +33,8 @@ public class SubCategoryService {
     public ResponseEntity<?> getAllSubCategories() {
         List<SubCategory> subCategories = subCategoryRepository.findAll();
         for (SubCategory sub : subCategories) {
-            long count = productRepository.countBySubCategory_Id(sub.getId());
+           
+            long count = productRepository.countBySubCategory_IdAndIsDeletedFalse(sub.getId());
             sub.setProductCount((int) count);
         }
         return response.send("Following sub-categories found", subCategories, HttpStatus.OK);
