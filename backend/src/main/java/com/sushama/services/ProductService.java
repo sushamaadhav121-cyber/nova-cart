@@ -1,13 +1,9 @@
 package com.sushama.services;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sushama.entities.Product;
 import com.sushama.entities.SubCategory;
@@ -36,7 +34,16 @@ public class ProductService {
     @Autowired
     private UnivarsalResponse response;
 
-    private final String IMAGE_UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/images/";
+    @Autowired
+    private Cloudinary cloudinary;
+
+    private String uploadImageToCloudinary(MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+        Map<?, ?> uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+        return uploadResult.get("secure_url").toString();
+    }
 
     public ResponseEntity addProduct(String productObject, MultipartFile productImage) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -49,18 +56,8 @@ public class ProductService {
         product.setSubCategory(existingSubCategory);
 
         if (productImage != null && !productImage.isEmpty()) {
-            File directory = new File(IMAGE_UPLOAD_DIR);
-            if (!directory.exists()) {
-                directory.mkdirs();
-            }
-
-            String originalName = productImage.getOriginalFilename();
-            String uniqueImageName = UUID.randomUUID().toString() + "_" + originalName;
-            
-            Path completeImagePath = Paths.get(IMAGE_UPLOAD_DIR, uniqueImageName);
-            Files.write(completeImagePath, productImage.getBytes());
-
-            product.setImageName(uniqueImageName);
+            String imageUrl = uploadImageToCloudinary(productImage);
+            product.setImageName(imageUrl);
         }
 
         product.setDeleted(false);
@@ -78,7 +75,6 @@ public class ProductService {
         }
     }
 
-    // --- 2. Hard delete chya jagi Soft Delete ---
     public ResponseEntity deleteProduct(long productId) {
         Optional<Product> existingProductOpt = productRepository.findById(productId);
         
@@ -120,16 +116,8 @@ public class ProductService {
         }
 
         if (productImage != null && !productImage.isEmpty()) {
-            File directory = new File(IMAGE_UPLOAD_DIR);
-            if (!directory.exists()) {
-                directory.mkdirs();
-            }
-
-            String originalImageName = productImage.getOriginalFilename();
-            newProduct.setImageName(originalImageName);
-
-            Path completeImagePath = Paths.get(IMAGE_UPLOAD_DIR, originalImageName);
-            Files.write(completeImagePath, productImage.getBytes());
+            String imageUrl = uploadImageToCloudinary(productImage);
+            newProduct.setImageName(imageUrl);
         } else {
             newProduct.setImageName(existingProduct.getImageName());
         }

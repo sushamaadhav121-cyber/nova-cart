@@ -44,6 +44,7 @@ public class Product {
 
     private String brand;
 
+    @Column(name = "image_name", length = 500)
     private String imageName;
 
     @Column(name = "is_deleted", nullable = false)
