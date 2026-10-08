@@ -16,7 +16,7 @@ public class CloudinaryConfig {
         Map<String, String> config = new HashMap<>();
         config.put("cloud_name", "pnrtkcsb");
         config.put("api_key", "647149325486149");
-        config.put("api_secret", "CLOUDINARY_URL=cloudinary://647149325486149:tUbrCSHuKnR-_GiDHr76zpmYEa0@pnrtkcsb"); // <-- इथे कॉपी केलेला Secret टाका
+        config.put("api_secret", "tUbrC5HuKnR-_GiDHr76zpmYEa0"); // <-- इथे कॉपी केलेला Secret टाका
         return new Cloudinary(config);
     }
 }
