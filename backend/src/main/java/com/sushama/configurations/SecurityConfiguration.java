@@ -55,7 +55,7 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/error", "/error/**").permitAll() // <-- ही ओळ जोडा
+                        .requestMatchers("/error", "/error/**").permitAll()
                         .requestMatchers("/api/v1/register", "/api/v1/register/**").permitAll()
                         .requestMatchers("/api/v1/login", "/api/v1/login/**").permitAll()
                         .requestMatchers("/api/v1/get/**").permitAll()
@@ -75,12 +75,23 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        
+
+        // config.setAllowedOriginPatterns(List.of(
+        //         "http://localhost:3000",
+        //         "http://localhost:3001",
+        //         "http://127.0.0.1:3000"
+        // ));
+
+        // (Netlify)
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:3000",
                 "http://localhost:3001",
-                "http://127.0.0.1:3000"
+                "http://127.0.0.1:3000",
+                "https://*.netlify.app",                             
+                "https://shimmering-swan-9ad3bf.netlify.app",        
+                "https://admirable-beijinho-271458.netlify.app"       
         ));
+
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setExposedHeaders(Arrays.asList("Authorization"));
